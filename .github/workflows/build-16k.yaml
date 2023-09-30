@@ -19,8 +19,21 @@ jobs:
     - name: Build the 16K kernel
       run: make ARCH=arm64 LLVM=1 -j$(nproc) Image.lzma && mkdir out && cp arch/arm64/boot/Image.lzma out/Image.lzma-16k
 
-    - name : Upload artifacts
+    - name: Build the modules
+      run: |
+        make ARCH=arm64 LLVM=1 -j$(nproc) modules && mkdir modules_dir && make ARCH=arm64 LLVM=1 -j$(nproc) modules_install INSTALL_MOD_PATH=./modules_dir INSTALL_MOD_STRIP=1
+        cd modules_dir
+        find . | cpio -o -H newc | gzip -9 > ../modules.cpio.gz
+        cd ..
+
+    - name : Upload kernel
       uses: actions/upload-artifact@master
       with:
         name: 16K kernel
         path: ./out/Image.lzma-16k
+
+    - name : Upload modules
+      uses: actions/upload-artifact@master
+      with:
+        name: modules
+        path: ./modules.cpio.gz
