@@ -1,7 +1,9 @@
 # Totally yanked from https://lca-kernel.ozlabs.org/2022-Currey-Abusing-GitHub-Actions-for-building-and-testing-kernels.pdf
 
 name: Build the 16K kernel
-on: [push]
+on: 
+  push:
+  workflow_dispatch:
 jobs:
   kernel:
     runs-on: ubuntu-22.04
